@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Card from '../components/Card';
 import { useDebounce } from '../hooks/debounce';
 import {
   useSearchUsersQuery,
@@ -17,6 +18,7 @@ const HomePage = () => {
   });
   const handleClick = (username: string) => {
     fetchRepos(username);
+    setDropdown(false);
   };
   useEffect(() => {
     setDropdown(debounced.length > 2 && data?.length! > 0);
@@ -49,7 +51,14 @@ const HomePage = () => {
         <div className="container">
           {areRepLoading && <p className="text-center">Repos are loading...</p>}
           {repos?.map((rep) => (
-            <p>{rep.name}</p>
+            <a
+              href={rep.html_url}
+              target="_blank"
+              rel="noreferrer"
+              key={rep.id}
+            >
+              <Card repo={rep} />
+            </a>
           ))}
         </div>
       </div>

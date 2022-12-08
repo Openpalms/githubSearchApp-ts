@@ -1,13 +1,20 @@
+import { useAppSelector } from '../hooks/redux';
+
 const Favourites = () => {
+  const { favourites } = useAppSelector((state) => state.github);
+  if (favourites.length === 0) return <p> No favourites found</p>;
   return (
-    <>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem labore,
-        quisquam ipsa temporibus expedita explicabo. Quae, culpa. Officia beatae
-        minus vel at excepturi rem reprehenderit maiores nesciunt veniam! Dolor
-        cumque consequatur quia iusto illum dolores rem mollitia ea quos labore.
-      </p>
-    </>
+    <div className="flex justify-center pt-10 mx-auto h-screen w-screen">
+      <ul className="list-none">
+        {favourites.map((fav) => (
+          <li key={fav}>
+            <a href={fav} target="_blank" rel="noreferrer">
+              {fav}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 export default Favourites;
