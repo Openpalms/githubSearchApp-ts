@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useDebounce } from '../hooks/debounce';
-import { useSearchUsersQuery } from '../store/github/githubAPI';
+import {
+  useSearchUsersQuery,
+  useLazyGetUserReposQuery,
+} from '../store/github/githubAPI';
 
 const HomePage = () => {
   const [search, setSearch] = useState('');
   const [dropdown, setDropdown] = useState(false);
   const debounced = useDebounce(search);
+  const [fetchRepos, { isLoading: areRepLoading, data: repos }] =
+    useLazyGetUserReposQuery();
   const { isLoading, isError, data } = useSearchUsersQuery(debounced, {
     skip: debounced.length < 2,
+    refetchOnFocus: true,
   });
+  const handleClick = (username: string) => {
+    fetchRepos(username);
+  };
   useEffect(() => {
     setDropdown(debounced.length > 2 && data?.length! > 0);
   }, [debounced, data]);
@@ -30,12 +39,19 @@ const HomePage = () => {
               <li
                 className="py-2 px-4 hover:bg-gray-500 hover:text-white transition-colors cursor-pointer "
                 key={user.id}
+                onClick={() => handleClick(user.login)}
               >
                 {user.login}
               </li>
             ))}
           </ul>
         )}
+        <div className="container">
+          {areRepLoading && <p className="text-center">Repos are loading...</p>}
+          {repos?.map((rep) => (
+            <p>{rep.name}</p>
+          ))}
+        </div>
       </div>
     </div>
   );
